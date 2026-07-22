@@ -59,11 +59,25 @@ st.sidebar.header("📁 Data Integration")
 sales_file = st.sidebar.file_uploader("Upload Weekly Sales (.xlsx)", type=['xlsx'])
 master_file = st.sidebar.file_uploader("Upload Store Master (.xlsx)", type=['xlsx'])
 
+# Define repository file paths (must match exact file names in GitHub)
+DEFAULT_SALES_PATH = "retail_weekly_sales.xlsx"
+DEFAULT_MASTER_PATH = "store_master.xlsx"
+
 if sales_file and master_file:
+    # 1. User uploaded custom files via UI
     sales_df = pd.read_excel(sales_file)
     master_df = pd.read_excel(master_file)
+    st.sidebar.success("Custom Excel files uploaded successfully!")
+
+elif os.path.exists(DEFAULT_SALES_PATH) and os.path.exists(DEFAULT_MASTER_PATH):
+    # 2. Automatically load real files stored in your GitHub repo
+    sales_df = pd.read_excel(DEFAULT_SALES_PATH)
+    master_df = pd.read_excel(DEFAULT_MASTER_PATH)
+    st.sidebar.success("Loaded default datasets from GitHub repo.")
+
 else:
-    st.sidebar.info("Using sample data. Upload your files to refresh.")
+    # 3. Fallback to generated sample data if files aren't found
+    st.sidebar.info("Using synthetic sample data. Upload your files to refresh.")
     sales_df, master_df = generate_sample_data()
 
 # 1. Clean extra whitespace from column headers
