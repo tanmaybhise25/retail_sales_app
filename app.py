@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -59,25 +60,21 @@ st.sidebar.header("📁 Data Integration")
 sales_file = st.sidebar.file_uploader("Upload Weekly Sales (.xlsx)", type=['xlsx'])
 master_file = st.sidebar.file_uploader("Upload Store Master (.xlsx)", type=['xlsx'])
 
-# Define repository file paths (must match exact file names in GitHub)
-DEFAULT_SALES_PATH = "retail_weekly_sales.xlsx"
-DEFAULT_MASTER_PATH = "store_master.xlsx"
+# Repository default filenames (ensure case sensitivity matches your GitHub files)
+DEFAULT_SALES = "retail_weekly_sales.xlsx"
+DEFAULT_MASTER = "store_master.xlsx"
 
+# Data Loading Strategy: Uploaded Files > Repository Files > Synthetic Sample Data
 if sales_file and master_file:
-    # 1. User uploaded custom files via UI
     sales_df = pd.read_excel(sales_file)
     master_df = pd.read_excel(master_file)
-    st.sidebar.success("Custom Excel files uploaded successfully!")
-
-elif os.path.exists(DEFAULT_SALES_PATH) and os.path.exists(DEFAULT_MASTER_PATH):
-    # 2. Automatically load real files stored in your GitHub repo
-    sales_df = pd.read_excel(DEFAULT_SALES_PATH)
-    master_df = pd.read_excel(DEFAULT_MASTER_PATH)
-    st.sidebar.success("Loaded default datasets from GitHub repo.")
-
+    st.sidebar.success("✅ Loaded uploaded Excel files.")
+elif os.path.exists(DEFAULT_SALES) and os.path.exists(DEFAULT_MASTER):
+    sales_df = pd.read_excel(DEFAULT_SALES)
+    master_df = pd.read_excel(DEFAULT_MASTER)
+    st.sidebar.success("✅ Automatically loaded datasets from repository.")
 else:
-    # 3. Fallback to generated sample data if files aren't found
-    st.sidebar.info("Using synthetic sample data. Upload your files to refresh.")
+    st.sidebar.info("ℹ️ Using sample fallback data.")
     sales_df, master_df = generate_sample_data()
 
 # 1. Clean extra whitespace from column headers
